@@ -8,6 +8,7 @@
     <PackageReference Include="Castle.Windsor" Version="4.*" />
     <PackageReference Include="NServiceBus.CastleWindsor" Version="7.0.0-*" />
     <PackageReference Include="Castle.Windsor.MsDependencyInjection" Version="3.*" />
+    <PackageReference Include="NServiceBus.CustomChecks" Version="3.0.0-*" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.*" />
   </ItemGroup>
 </Project>

@@ -8,4 +8,9 @@ public class MyService
     {
         log.Info("Hello from MyService.");
     }
+
+	public void WriteCheck()
+	{
+		log.Info("Check from MyService");
+	}
 }

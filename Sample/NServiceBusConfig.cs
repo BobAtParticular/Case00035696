@@ -19,7 +19,9 @@ namespace Sample.Core
 				    customizations.ExistingContainer(container);
 			    });
 
-		    var endpoint = Endpoint.Start(endpointConfiguration).GetAwaiter().GetResult();
+		    endpointConfiguration.ReportCustomChecksTo("Particular.ServiceControl");
+
+			var endpoint = Endpoint.Start(endpointConfiguration).GetAwaiter().GetResult();
 
 		    container.Register(Component.For<IEndpointInstance>().Instance(endpoint));
 		}
