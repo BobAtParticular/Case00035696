@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using Castle.Windsor.MsDependencyInjection;
+using Sample.Core;
 
 public class Startup
 {
@@ -21,19 +22,7 @@ public class Startup
 		    .Instance(new MyService());
 	    container.Register(registration);
 
-        IEndpointInstance endpoint = null;
-	    // ReSharper disable once AccessToModifiedClosure
-	    container.Register(Component.For<IEndpointInstance>().UsingFactoryMethod(() => endpoint));
-
-        var endpointConfiguration = new EndpointConfiguration("Sample.Core");
-        endpointConfiguration.UseTransport<LearningTransport>();
-	    endpointConfiguration.UseContainer<WindsorBuilder>(
-		    customizations: customizations =>
-		    {
-			    customizations.ExistingContainer(container);
-		    });
-
-		endpoint = Endpoint.Start(endpointConfiguration).GetAwaiter().GetResult();
+		NServiceBusConfig.Configure(container);
 
 		return WindsorRegistrationHelper.CreateServiceProvider(container, services);
 	}
