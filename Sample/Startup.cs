@@ -33,9 +33,6 @@ public class Startup
     {
         loggerFactory.AddConsole();
 
-	    Container.Register(Component.For(typeof(ILogger<>))
-		    .UsingFactoryMethod((k, c, t) => loggerFactory.CreateLogger(t.RequestedType.GenericTypeArguments[0])));
-
 		if (environment.IsDevelopment())
         {
             applicationBuilder.UseDeveloperExceptionPage();
