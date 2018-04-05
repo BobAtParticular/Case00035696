@@ -4,7 +4,11 @@ using Microsoft.AspNetCore.Hosting;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Castle.Windsor;
 using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Sample.Core;
 
 static class Program
 {
@@ -14,6 +18,9 @@ static class Program
         webHostBuilder.UseKestrel();
         webHostBuilder.UseContentRoot(Directory.GetCurrentDirectory());
         webHostBuilder.UseIISIntegration();
+	    webHostBuilder.ConfigureServices(serviceCollection => serviceCollection.AddSingleton(new WindsorContainer()));
+	    webHostBuilder.ConfigureServices(serviceCollection =>
+		    serviceCollection.AddSingleton<IHostedService, NServiceBusBackgroundService>());
         webHostBuilder.UseStartup<Startup>();
         var host = webHostBuilder.Build();
         await host.StartAsync()

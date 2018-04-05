@@ -9,31 +9,34 @@ using System.Threading.Tasks;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using Castle.Windsor.MsDependencyInjection;
-using Sample.Core;
 
 public class Startup
 {
-    #region ContainerConfiguration
+	public WindsorContainer Container { get; }
+
+	public Startup(WindsorContainer container)
+	{
+		Container = container;
+	}
+
 
     public IServiceProvider ConfigureServices(IServiceCollection services)
     {
-	    var container = new WindsorContainer();
 	    var registration = Component.For<MyService>()
 		    .Instance(new MyService());
-	    container.Register(registration);
+	    Container.Register(registration);
 
-		NServiceBusConfig.Configure(container);
-
-		return WindsorRegistrationHelper.CreateServiceProvider(container, services);
+		return WindsorRegistrationHelper.CreateServiceProvider(Container, services);
 	}
 
-    #endregion
-
-    public void Configure(IApplicationBuilder applicationBuilder, IHostingEnvironment environment, ILoggerFactory loggerFactory)
+	public void Configure(IApplicationBuilder applicationBuilder, IHostingEnvironment environment, ILoggerFactory loggerFactory)
     {
         loggerFactory.AddConsole();
 
-        if (environment.IsDevelopment())
+	    Container.Register(Component.For(typeof(ILogger<>))
+		    .UsingFactoryMethod((k, c, t) => loggerFactory.CreateLogger(t.RequestedType.GenericTypeArguments[0])));
+
+		if (environment.IsDevelopment())
         {
             applicationBuilder.UseDeveloperExceptionPage();
         }
@@ -49,11 +52,11 @@ public class Startup
                     return Task.CompletedTask;
                 }
                 var applicationServices = applicationBuilder.ApplicationServices;
-                var endpointInstance = applicationServices.GetService<IEndpointInstance>();
+                var messageSession = applicationServices.GetService<IMessageSession>();
                 var myMessage = new MyMessage();
 
                 return Task.WhenAll(
-                    endpointInstance.SendLocal(myMessage),
+	                messageSession.SendLocal(myMessage),
                     context.Response.WriteAsync("Message sent"));
             });
 
